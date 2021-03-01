@@ -1,12 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, View, Text } from 'react-native';
+import { PermissionStatus } from 'expo-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function App() {
+  const [imageInfo, setImageInfo] = React.useState();
+
+  const handlePress = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status === PermissionStatus.GRANTED) {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      });
+
+      if (!result.cancelled) {
+        setImageInfo(result);
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Button title='Pick image' onPress={handlePress} />
+      {imageInfo && <Text>{imageInfo.uri}</Text>}
     </View>
   );
 }
